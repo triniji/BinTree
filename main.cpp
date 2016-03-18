@@ -23,5 +23,13 @@ int main()
     for (int i = 0; i < a.size(); i++)
         cout << a[i] << "  ";
         cout << endl << "Min: " << tree.front() << endl << "Max: " << tree.back();
+        tree.push(-700);
+        tree.push(900);
+        cout << "_______________________\n";
+        a = tree.to_vector();
+        for (int i = 0; i < a.size(); i++)
+            cout << a[i] << "  ";
+            cout << "\nMin: " << tree.front() << "\nMax: " << tree.back();
+
     return 0;
 }

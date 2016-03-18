@@ -1,17 +1,18 @@
 #ifndef BINARYTREE_H_INCLUDED
 #define BINARYTREE_H_INCLUDED
 #include <vector>
+#include <memory>
 
-template<typename T, typename Comparator> class BinaryTree;
-#include "Node.h"
 
 template<typename T, typename Comparator>
 class BinaryTree
 {
 protected:
-    std::shared_ptr<Node<T, Comparator>> _root;
+    struct Node;
+    std::shared_ptr<Node> _root;
     int _size;
-    void _inorder_walk(std::shared_ptr<Node<T, Comparator>> startNode, std::vector<T>& vector);
+    void _inorder_walk(std::shared_ptr<Node> startNode, std::vector<T>& vector);
+
 public:
     BinaryTree();
     void push(const T& element);
@@ -20,6 +21,16 @@ public:
     T front();
     T back();
     std::vector<T> to_vector();
+};
+
+
+template <typename T, typename Comparator>
+struct BinaryTree<T, Comparator>::Node
+{
+    T _data;
+    std::shared_ptr<Node> _left;
+    std::shared_ptr<Node> _right;
+    std::shared_ptr<Node> _parrent;
 };
 
 template<typename T, typename Comparator>
@@ -32,8 +43,8 @@ BinaryTree<T, Comparator>::BinaryTree()
 template<typename T, typename Comparator>
 void BinaryTree<T, Comparator>::push(const T& element)
 {
-    std::shared_ptr<Node<T, Comparator>> current = _root;
-    std::shared_ptr<Node<T, Comparator>> parrent = nullptr;
+    std::shared_ptr<Node> current = _root;
+    std::shared_ptr<Node> parrent = nullptr;
 
     while (current != nullptr)
     {
@@ -44,7 +55,8 @@ void BinaryTree<T, Comparator>::push(const T& element)
             current = current -> _right;
     }
 
-    std::shared_ptr<Node<T, Comparator>> node(new Node<T, Comparator>(element));
+    std::shared_ptr<Node> node(new Node);
+    node -> _data = element;
     if (parrent == nullptr)
         _root = node;
     else
@@ -78,7 +90,7 @@ T BinaryTree<T, Comparator>::front()
 {
     if (_size > 0)
     {
-        std::shared_ptr<Node<T, Comparator>> current = _root;
+        std::shared_ptr<Node> current = _root;
         while (current -> _left != nullptr)
             current = current -> _left;
         return current -> _data;
@@ -90,7 +102,7 @@ T BinaryTree<T, Comparator>::back()
 {
     if (_size > 0)
     {
-        std::shared_ptr<Node<T, Comparator>> current = _root;
+        std::shared_ptr<Node> current = _root;
         while (current -> _right != nullptr)
             current = current -> _right;
         return current -> _data;
@@ -106,7 +118,7 @@ std::vector<T> BinaryTree<T, Comparator>::to_vector()
 }
 
 template<typename T, typename Comparator>
-void BinaryTree<T, Comparator>::_inorder_walk(std::shared_ptr<Node<T, Comparator>> startNode, std::vector<T>& vector)
+void BinaryTree<T, Comparator>::_inorder_walk(std::shared_ptr<Node> startNode, std::vector<T>& vector)
 {
     if (startNode != nullptr)
     {
