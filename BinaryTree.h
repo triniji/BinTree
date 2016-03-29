@@ -11,16 +11,20 @@ protected:
     struct Node;
     std::shared_ptr<Node> _root;
     int _size;
-    void _inorder_walk(std::shared_ptr<Node> startNode, std::vector<T>& vector);
+    void _to_vector(std::shared_ptr<Node>& startNode, std::vector<T>& vector);
+    void _copySubTree(std::shared_ptr<Node>& fromTree, std::shared_ptr<Node>& toTree);
 
 public:
     BinaryTree();
     void push(const T& element);
     int getSize() const;
     void push(std::vector<T>& elements);
-    T front();
-    T back();
+    T getMinimal();
+    T getMaximal();
     std::vector<T> to_vector();
+    bool exists(const T& element);
+    BinaryTree<T, Comparator>& operator= (BinaryTree& tree);
+    void erase();
 };
 
 
@@ -52,7 +56,13 @@ void BinaryTree<T, Comparator>::push(const T& element)
         if (Comparator::compare(element, current -> _data) == -1)
             current = current -> _left;
         else
-            current = current -> _right;
+            if (Comparator::compare(element, current -> _data) == 1)
+                current = current -> _right;
+            else
+                if (!Comparator::equals(element, current -> _data))
+                    current = current -> _right;
+                else
+                    return;
     }
 
     std::shared_ptr<Node> node(new Node);
@@ -86,7 +96,7 @@ void BinaryTree<T, Comparator>::push(std::vector<T>& elements)
 }
 
 template<typename T, typename Comparator>
-T BinaryTree<T, Comparator>::front()
+T BinaryTree<T, Comparator>::getMinimal()
 {
     if (_size > 0)
     {
@@ -98,7 +108,7 @@ T BinaryTree<T, Comparator>::front()
 }
 
 template<typename T, typename Comparator>
-T BinaryTree<T, Comparator>::back()
+T BinaryTree<T, Comparator>::getMaximal()
 {
     if (_size > 0)
     {
@@ -113,20 +123,96 @@ template<typename T, typename Comparator>
 std::vector<T> BinaryTree<T, Comparator>::to_vector()
 {
     std::vector<T> result;
-    _inorder_walk(_root, result);
+    _to_vector(_root, result);
     return result;
 }
 
 template<typename T, typename Comparator>
-void BinaryTree<T, Comparator>::_inorder_walk(std::shared_ptr<Node> startNode, std::vector<T>& vector)
+void BinaryTree<T, Comparator>::_to_vector(std::shared_ptr<Node>& startNode, std::vector<T>& vector)
 {
     if (startNode != nullptr)
     {
-        _inorder_walk(startNode -> _left, vector);
+        _to_vector(startNode -> _left, vector);
         vector.push_back(startNode -> _data);
-        _inorder_walk(startNode -> _right, vector);
+        _to_vector(startNode -> _right, vector);
     }
 }
+
+template<typename T, typename Comparator>
+bool BinaryTree<T, Comparator>::exists(const T& element)
+{
+    std::shared_ptr<Node> current = _root;
+    while (current != nullptr)
+    {
+        if (Comparator::compare(element, current -> _data) == -1)
+            current = current -> _left;
+        else
+            if (Comparator::compare(element, current -> _data) == 1)
+                current = current -> _right;
+            else
+                if (Comparator::equals(element, current -> _data))
+                    return true;
+                else
+                    current = current -> _right;
+    }
+    return false;
+}
+
+
+template<typename T, typename Comparator>
+BinaryTree<T, Comparator>& BinaryTree<T, Comparator>::operator= (BinaryTree& tree)
+{
+    if (&tree == this)
+        return *this;
+    erase();
+    if (tree._size != 0)
+    {
+        _size = tree._size;
+        std::shared_ptr<Node> node(new Node);
+        node -> _parrent = nullptr;
+        node -> _data = tree._root -> _data;
+        _root = node;
+        _copySubTree(tree._root, _root);
+    }
+}
+
+template<typename T, typename Comparator>
+void BinaryTree<T, Comparator>::erase()
+{
+    _root = nullptr;
+    _size = 0;
+}
+
+template<typename T, typename Comparator>
+void BinaryTree<T, Comparator>::_copySubTree(std::shared_ptr<Node>& fromTree, std::shared_ptr<Node>& toTree)
+{
+    if (fromTree -> _left == nullptr)
+    {
+        toTree -> _left = nullptr;
+    }
+    else
+    {
+        std::shared_ptr<Node> node(new Node);
+        node -> _data = fromTree -> _left -> _data;
+        node -> _parrent = toTree;
+        toTree -> _left = node;
+        _copySubTree(fromTree -> _left, toTree -> _left);
+    }
+
+    if (fromTree -> _right == nullptr)
+    {
+        toTree -> _right = nullptr;
+    }
+    else
+    {
+        std::shared_ptr<Node> node(new Node);
+        node -> _data = fromTree -> _right -> _data;
+        node -> _parrent = toTree;
+        toTree -> _right = node;
+        _copySubTree(fromTree -> _right, toTree -> _right);
+    }
+}
+
 #endif // BINARYTREE_H_INCLUDED
 
 
@@ -137,6 +223,6 @@ get(std::function<bool(T)> f)
 iterator()
 to_string +
 remove(std::function<bool(T)> f)
-exists(T element)
+exists(T element) +
 remove(T element)
 */

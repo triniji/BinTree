@@ -3,33 +3,43 @@
 #include "Comparator.h"
 using namespace std;
 
+
+void displayTree(BinaryTree<int, IntegerComparator>& tree)
+{
+    vector<int> tmp = tree.to_vector();
+    for (int i = 0; i < tmp.size(); i++)
+    {
+        cout << tmp[i] << " ";
+    }
+    cout << "\n";
+    return;
+}
+
 int main()
 {
-    cout << "В дерево будут добавлены следующие элементы (в порядке добавления)" << endl;
     BinaryTree<int, IntegerComparator> tree;
-    for (int i = 0; i < 20; i++)
-    {
-        if (i & 1)
-            tree.push(i - 10);
-        else
-            tree.push(i * 2);
-        cout << (i & 1 == 1? i - 10: i * 2) << "  ";
+    vector<int> a;
+    for (int i = -6; i < 10; i++)
+        a.push_back(i);
+    tree.push(a);
+    cout << "tree: ";
+    displayTree(tree);
 
-    }
-    cout << endl;
-    std::vector<int> a;
-    a = tree.to_vector();
-    cout << "Получение всех элементов дерева в порядке возрастания" << endl;
-    for (int i = 0; i < a.size(); i++)
-        cout << a[i] << "  ";
-        cout << endl << "Min: " << tree.front() << endl << "Max: " << tree.back();
-        tree.push(-700);
-        tree.push(900);
-        cout << "_______________________\n";
-        a = tree.to_vector();
-        for (int i = 0; i < a.size(); i++)
-            cout << a[i] << "  ";
-            cout << "\nMin: " << tree.front() << "\nMax: " << tree.back();
+    BinaryTree<int, IntegerComparator> secondTree;
+    secondTree = tree;
+    cout << "secondTree: ";
+    displayTree(secondTree);
+    secondTree.push(100);
+    secondTree.push(-40);
+    secondTree.push(200);
+    secondTree.push(-50);
+    secondTree.push(-25);
+    secondTree.push(75);
+    cout << "Min: " << secondTree.getMinimal() << "\nMax: " << secondTree.getMaximal() << "\n";
+    displayTree( secondTree);
+    displayTree(tree);
+    tree = secondTree;
+    displayTree(secondTree);
 
     return 0;
 }
