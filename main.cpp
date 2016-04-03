@@ -4,9 +4,9 @@
 using namespace std;
 
 
-void displayTree(BinaryTree<int, IntegerComparator>& tree)
+void displayTree(BinaryTree<int, IntegerComparator>& _tree)
 {
-    vector<int> tmp = tree.to_vector();
+    vector<int> tmp = _tree.to_vector();
     for (int i = 0; i < tmp.size(); i++)
     {
         cout << tmp[i] << " ";
@@ -18,28 +18,36 @@ void displayTree(BinaryTree<int, IntegerComparator>& tree)
 int main()
 {
     BinaryTree<int, IntegerComparator> tree;
-    vector<int> a;
-    for (int i = -6; i < 10; i++)
-        a.push_back(i);
-    tree.push(a);
-    cout << "tree: ";
-    displayTree(tree);
-
-    BinaryTree<int, IntegerComparator> secondTree;
-    secondTree = tree;
-    cout << "secondTree: ";
-    displayTree(secondTree);
-    secondTree.push(100);
-    secondTree.push(-40);
-    secondTree.push(200);
-    secondTree.push(-50);
-    secondTree.push(-25);
-    secondTree.push(75);
-    cout << "Min: " << secondTree.getMinimal() << "\nMax: " << secondTree.getMaximal() << "\n";
-    displayTree( secondTree);
-    displayTree(tree);
-    tree = secondTree;
-    displayTree(secondTree);
+    tree.push(40);
+    tree.push(25);
+    tree.push(31);
+    tree.push(44);
+    tree.push(-5);
+    tree.push(7);
+    tree.push(81);
+    tree.push(34);
+    tree.push(45);
+    tree.push(15);
+    tree.push(19);
+    tree.push(12);
+    tree.push(-2);
+    tree.push(18);
+    tree.push(4);
+    tree.push(8);
+    tree.push(28);
+    cout << "tree (size = " << tree.getSize() << "):\n"; displayTree(tree);
+    BinaryTree<int, IntegerComparator> copyTree = tree;
+    cout << "copyTree (size = " << copyTree.getSize() << "):\n"; displayTree(copyTree);
+    tree.pop(7);
+    tree.pop(25);
+    tree.pop(40);
+    tree.pop(15);
+    tree.pop(-5);
+    cout << "tree (size = " << tree.getSize() << "):\n"; displayTree(tree);
+    cout << "Test filter. Tree (with size = " << copyTree.getSize() << "):\n"; displayTree(copyTree); cout << "WTF? o_O\n";
+    auto func = [](int i){return(!(i & 1));};
+    tree = copyTree.filter(func);
+    cout << "Filter: x mod 2 = 0\n"; displayTree(tree);
 
     return 0;
 }
