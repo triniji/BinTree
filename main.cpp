@@ -4,9 +4,9 @@
 using namespace std;
 
 
-void displayTree(BinaryTree<int, IntegerComparator>& _tree)
+void displayTree(BinaryTree<int, IntegerComparator>& tree)
 {
-    vector<int> tmp = _tree.to_vector();
+    vector<int> tmp = tree.to_vector();
     for (int i = 0; i < tmp.size(); i++)
     {
         cout << tmp[i] << " ";
@@ -48,6 +48,9 @@ int main()
     auto func = [](int i){return(!(i & 1));};
     tree = copyTree.filter(func);
     cout << "Filter: x mod 2 = 0\n"; displayTree(tree);
-
+    cout << "Tree:\n"; displayTree(copyTree);
+    copyTree.pop(func);
+    cout << "Delete elements like 2*z\n";
+    cout << "Now tree:\n"; displayTree(copyTree);
     return 0;
 }

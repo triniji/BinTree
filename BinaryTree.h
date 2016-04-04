@@ -11,9 +11,9 @@ protected:
     struct Node;
     std::shared_ptr<Node> _root;
     int _size;
-    void _to_vector(std::shared_ptr<Node>& startNode, std::vector<T>& vector);
+    void _to_vector(const std::shared_ptr<Node>& startNode, std::vector<T>& vector) const;
     void _copySubTree(const std::shared_ptr<Node>& fromTree, std::shared_ptr<Node>& toTree);
-    std::shared_ptr<Node>& _search(const T& element)
+    std::shared_ptr<Node>& _search(const T& element) const
     {
         std::shared_ptr<Node> current = _root;
         while (current != nullptr)
@@ -31,22 +31,24 @@ protected:
         }
         return current;
     };
-    void _filter(BinaryTree<T, Comparator>& result, std::shared_ptr<Node>& ptr, std::function<bool(T)>& f);
+    void _filter(BinaryTree<T, Comparator>& result, const std::shared_ptr<Node>& ptr, std::function<bool(T)>& f) const;
 
 public:
     BinaryTree();
+    BinaryTree(const BinaryTree<T, Comparator>& tree);
     ~BinaryTree();
     void push(const T& element);
     int getSize() const;
     void push(const std::vector<T>& elements);
-    T getMinimal();
-    T getMaximal();
-    std::vector<T> to_vector();
-    bool exists(const T& element);
+    T getMinimal() const;
+    T getMaximal() const;
+    std::vector<T> to_vector() const;
+    bool exists(const T& element) const;
     BinaryTree<T, Comparator>& operator=(const BinaryTree& tree);
     void erase();
     void pop(const T& element);
-    BinaryTree<T, Comparator> filter(std::function<bool(T)> f);
+    BinaryTree<T, Comparator> filter(std::function<bool(T)> f) const;
+    void pop(std::function<bool(T)> f);
 };
 
 template<typename T, typename Comparator>
@@ -69,6 +71,11 @@ BinaryTree<T, Comparator>::BinaryTree()
 {
     _root = nullptr;
     _size = 0;
+}
+template<typename T, typename Comparator>
+BinaryTree<T, Comparator>::BinaryTree(const BinaryTree<T, Comparator>& tree)
+{
+    *this = tree;
 }
 
 template<typename T, typename Comparator>
@@ -123,7 +130,7 @@ void BinaryTree<T, Comparator>::push(const std::vector<T>& elements)
 }
 
 template<typename T, typename Comparator>
-T BinaryTree<T, Comparator>::getMinimal()
+T BinaryTree<T, Comparator>::getMinimal() const
 {
     if (_size > 0)
     {
@@ -135,7 +142,7 @@ T BinaryTree<T, Comparator>::getMinimal()
 }
 
 template<typename T, typename Comparator>
-T BinaryTree<T, Comparator>::getMaximal()
+T BinaryTree<T, Comparator>::getMaximal() const
 {
     if (_size > 0)
     {
@@ -147,7 +154,7 @@ T BinaryTree<T, Comparator>::getMaximal()
 }
 
 template<typename T, typename Comparator>
-std::vector<T> BinaryTree<T, Comparator>::to_vector()
+std::vector<T> BinaryTree<T, Comparator>::to_vector() const
 {
     std::vector<T> result;
     _to_vector(_root, result);
@@ -155,7 +162,7 @@ std::vector<T> BinaryTree<T, Comparator>::to_vector()
 }
 
 template<typename T, typename Comparator>
-void BinaryTree<T, Comparator>::_to_vector(std::shared_ptr<Node>& startNode, std::vector<T>& vector)
+void BinaryTree<T, Comparator>::_to_vector(const std::shared_ptr<Node>& startNode, std::vector<T>& vector) const
 {
     if (startNode != nullptr)
     {
@@ -166,7 +173,7 @@ void BinaryTree<T, Comparator>::_to_vector(std::shared_ptr<Node>& startNode, std
 }
 
 template<typename T, typename Comparator>
-bool BinaryTree<T, Comparator>::exists(const T& element)
+bool BinaryTree<T, Comparator>::exists(const T& element) const
 {
     if (_search(element) == nullptr)
         return false;
@@ -304,7 +311,7 @@ void BinaryTree<T, Comparator>::pop(const T& element)
 }
 
 template<typename T, typename Comparator>
-BinaryTree<T, Comparator> BinaryTree<T, Comparator>::filter(std::function<bool(T)> f)
+BinaryTree<T, Comparator> BinaryTree<T, Comparator>::filter(std::function<bool(T)> f) const
 {
     BinaryTree<T, Comparator> result;
     _filter (result, _root, f);
@@ -312,7 +319,7 @@ BinaryTree<T, Comparator> BinaryTree<T, Comparator>::filter(std::function<bool(T
 }
 
 template<typename T, typename Comparator>
-void BinaryTree<T, Comparator>::_filter(BinaryTree<T, Comparator>& result, std::shared_ptr<Node>& ptr, std::function<bool(T)>& f)
+void BinaryTree<T, Comparator>::_filter(BinaryTree<T, Comparator>& result, const std::shared_ptr<Node>& ptr, std::function<bool(T)>& f) const
 {
     if (ptr != nullptr)
     {
@@ -323,6 +330,13 @@ void BinaryTree<T, Comparator>::_filter(BinaryTree<T, Comparator>& result, std::
     }
 }
 
+template<typename T, typename Comparator>
+void BinaryTree<T, Comparator>::pop(std::function<bool(T)> f)
+{
+    std::vector<T> tmp = filter(f).to_vector();
+    for (int i = 0; i < tmp.size(); i++)
+        pop(tmp[i]);
+}
 
 #endif // BINARYTREE_H_INCLUDED
 
